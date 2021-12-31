@@ -8,4 +8,6 @@ sealed class Navigation(val route: String){
     object Splash: Navigation("splash")
     object Dashboard: Navigation("dashboard")
     object Detail: Navigation("detail")
+
+    open fun createRoute(args: Map<String, String>?): String{ return route }
 }

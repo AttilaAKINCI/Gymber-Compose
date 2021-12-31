@@ -1,4 +1,4 @@
-package com.akinci.gymbercompose.ui.feature.detail
+package com.akinci.gymbercompose.ui.feature.splash.view
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -7,12 +7,11 @@ import com.akinci.gymbercompose.ui.components.PageNavigator
 import com.akinci.gymbercompose.ui.theme.GymberComposeTheme
 
 @Composable
-fun DetailScreenBody(
+fun SplashScreenBody(
     onClick : ()->Unit
 ) {
     PageNavigator(
-        navigatorMessageId = R.string.detail_page,
-        navigateButtonMessageId = R.string.button_prev_page,
+        R.string.splash_page,
         onClick = onClick
     )
 }
@@ -21,6 +20,6 @@ fun DetailScreenBody(
 @Composable
 fun DefaultPreview() {
     GymberComposeTheme {
-        DetailScreenBody(onClick = { })
+        SplashScreenBody(onClick = { })
     }
 }
