@@ -33,6 +33,7 @@
 
     <!--  Detail Fragment   -->
     <string name="title_detail">Gym Details</string>
+    <string name="partner_data_empty">Gym details could not be acquired....</string>
     <string name="drop_in">Drop in</string>
     <string name="reservable">Reservable</string>
     <string name="first_come_first_serve">In Order</string>

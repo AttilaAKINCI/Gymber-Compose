@@ -50,6 +50,9 @@ class DashboardViewModel @Inject constructor(
         matchState = true
         partnerState = partnerListState[0]
     }
+    fun setPartner(){
+        partnerState = partnerListState[0]
+    }
 
 
 //    fun getTopItem(): Partner{ return partnerList[0] }
@@ -83,6 +86,7 @@ class DashboardViewModel @Inject constructor(
                             networkResponse.data?.let {
                                 Timber.d("Partner list fetched size:-> ${it.data}")
                                 partnerListState = PartnerMatchProvider.createAMatchPattern(it.data)
+                                partnerState = partnerListState[0] // todo remove later.
                             }
                         }
                     }

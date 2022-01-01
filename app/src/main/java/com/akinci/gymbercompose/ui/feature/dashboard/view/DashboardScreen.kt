@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -139,43 +140,48 @@ fun DashboardScreenBody(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight()
-                            .padding(0.dp,0.dp,0.dp,50.dp)
+                            .padding(0.dp, 0.dp, 0.dp, 50.dp)
                             .align(alignment = Alignment.BottomCenter),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         /** disLike Button **/
                         FloatingActionButton(
-                            onClick = { scope.launch { onNavigateToDetail.invoke() } }
+                            onClick = { scope.launch { /** TODO fill with dislike action **/ } },
+                            backgroundColor = colorResource(R.color.red_dark)
                         ) {
                             Icon(
-                                Icons.Filled.KeyboardArrowRight,
-                                "",
-                                modifier = Modifier.scale(1.2f),
+                                painter = painterResource(R.drawable.ic_cancel),
+                                contentDescription = stringResource(R.string.floating_button_content_desc),
+                                modifier = Modifier.scale(1f),
                                 tint = colorResource(R.color.white)
                             )
                         }
 
                         /** select Button **/
                         FloatingActionButton(
-                            onClick = { scope.launch { vm.setMatchState() } }
+                            onClick = { scope.launch {
+                                vm.setPartner()
+                                onNavigateToDetail.invoke()
+                            } },
+                            backgroundColor = colorResource(R.color.purple_500)
                         ) {
                             Icon(
-                                Icons.Filled.KeyboardArrowRight,
-                                "",
-                                modifier = Modifier.scale(1.2f),
+                                painter = painterResource(R.drawable.ic_bag),
+                                contentDescription = stringResource(R.string.floating_button_content_desc),
+                                modifier = Modifier.scale(1f),
                                 tint = colorResource(R.color.white)
                             )
                         }
 
                         /** like Button **/
                         FloatingActionButton(
-                            onClick = { scope.launch { onNavigateToDetail.invoke() } }
+                            onClick = { scope.launch { /** TODO fill with like action **/ vm.setMatchState() } }
                         ) {
                             Icon(
-                                Icons.Filled.KeyboardArrowRight,
-                                "",
-                                modifier = Modifier.scale(1.2f),
+                                painter = painterResource(R.drawable.ic_check),
+                                contentDescription = stringResource(R.string.floating_button_content_desc),
+                                modifier = Modifier.scale(1f),
                                 tint = colorResource(R.color.white)
                             )
                         }
