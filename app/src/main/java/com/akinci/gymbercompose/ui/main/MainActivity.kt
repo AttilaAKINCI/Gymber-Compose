@@ -3,14 +3,14 @@ package com.akinci.gymbercompose.ui.main
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.akinci.gymbercompose.ui.components.NetworkDependentScreen
-import com.akinci.gymbercompose.ui.feature.dashboard.view.DashboardScreenBody
+import com.akinci.gymbercompose.ui.feature.dashboard.view.DashboardScreen
 import com.akinci.gymbercompose.ui.feature.detail.view.DetailScreenBody
-import com.akinci.gymbercompose.ui.feature.splash.view.SplashScreenBody
+import com.akinci.gymbercompose.ui.feature.splash.view.SplashScreen
 import com.akinci.gymbercompose.ui.main.navigation.Navigation
 import com.akinci.gymbercompose.ui.main.util.GymberAppState
 import com.akinci.gymbercompose.ui.main.util.rememberGymberAppState
@@ -19,6 +19,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity: ComponentActivity() {
+    @ExperimentalAnimationApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -27,6 +28,7 @@ class MainActivity: ComponentActivity() {
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun GymberApp(
     appState: GymberAppState = rememberGymberAppState()
@@ -36,6 +38,7 @@ fun GymberApp(
     }
 }
 
+@ExperimentalAnimationApi
 @Composable
 fun MainNavHost(
     appState: GymberAppState,
@@ -47,13 +50,10 @@ fun MainNavHost(
         modifier = modifier
     ){
         composable(route = Navigation.Splash.route){
-            SplashScreenBody(onClick = { appState.navigate(Navigation.Dashboard, from = it) })
+            SplashScreen(onTimeout = { appState.navigate(Navigation.Dashboard, from = it) })
         }
         composable(route = Navigation.Dashboard.route){
-            /** For a trial Dashboard Screen is marked as "Network Dependent Screen" (NDS) **/
-            NetworkDependentScreen(retryAction = { appState.navigateBack() }) {
-                DashboardScreenBody(onClick = { appState.navigate(Navigation.Detail, from = it) })
-            }
+            DashboardScreen(onNavigateToDetail = { appState.navigate(Navigation.Detail, from = it) })
         }
         composable(route = Navigation.Detail.route){
             DetailScreenBody(onClick = { appState.navigateBack() })

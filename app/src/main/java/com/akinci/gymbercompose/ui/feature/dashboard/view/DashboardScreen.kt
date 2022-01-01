@@ -1,25 +1,221 @@
 package com.akinci.gymbercompose.ui.feature.dashboard.view
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberImagePainter
+import com.airbnb.lottie.compose.LottieAnimation
+import com.airbnb.lottie.compose.LottieCompositionSpec
+import com.airbnb.lottie.compose.rememberLottieComposition
 import com.akinci.gymbercompose.R
-import com.akinci.gymbercompose.ui.components.PageNavigator
+import com.akinci.gymbercompose.ui.components.NetworkDependentScreen
+import com.akinci.gymbercompose.ui.components.TiledBackground
+import com.akinci.gymbercompose.ui.feature.dashboard.viewmodel.DashboardViewModel
 import com.akinci.gymbercompose.ui.theme.GymberComposeTheme
+import kotlinx.coroutines.launch
 
+/**
+ * Stateful version of the Podcast player
+ */
+@ExperimentalAnimationApi
 @Composable
-fun DashboardScreenBody(
-    onClick : ()->Unit
-) {
-    PageNavigator(
-        R.string.dashboard_page,
-        onClick = onClick
+fun DashboardScreen(
+    viewModel: DashboardViewModel = hiltViewModel(),
+    onNavigateToDetail: () -> Unit,
+    animationCount:Int = Int.MAX_VALUE    // Added for compose ui tests.. Lottie is blocking UI for infinite animation.
+){
+    DashboardScreenBody(
+        vm = viewModel,
+        onNavigateToDetail = onNavigateToDetail,
+        animationCount = animationCount
     )
 }
 
+/**
+ * Stateless version of the Player screen
+ */
+@ExperimentalAnimationApi
+@Composable
+fun DashboardScreenBody(
+    vm: DashboardViewModel,
+    onNavigateToDetail: () -> Unit,
+    animationCount: Int
+) {
+    val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        scaffoldState = scaffoldState,
+    ) {
+        /** For a trial Dashboard Screen is marked as "Network Dependent Screen" (NDS) **/
+        NetworkDependentScreen(retryAction = {  }) {
+            TiledBackground(
+                tiledDrawableId = R.drawable.pattern
+            ){
+                Box {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ){
+
+                        /** Welcome section **/
+                        Row(
+                            modifier = Modifier
+                                .padding(20.dp, 20.dp, 20.dp, 10.dp)
+                                .height(100.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .border(
+                                    BorderStroke(1.dp, colorResource(R.color.black)),
+                                    RoundedCornerShape(10.dp)
+                                )
+                                .background(color = colorResource(R.color.white_90)),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+
+                            val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.gymber))
+                            LottieAnimation(
+                                composition,
+                                modifier = Modifier
+                                    .width(100.dp)
+                                    .height(100.dp),
+                                iterations = animationCount
+                            )
+
+                            Text(
+                                text = stringResource(R.string.dashboard_welcome_info_text),
+                                modifier = Modifier.padding(0.dp, 0.dp, 5.dp,0.dp),
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+
+                        // swipe gym image
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(fraction = 0.8f)
+                                .padding(20.dp, 20.dp, 20.dp, 20.dp)
+                                .clip(RoundedCornerShape(18.dp))
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(
+                                    data = vm.partnerState?.header_image?.get("desktop") ?: "https://edge.one.fit/image/partner/image/16849/e4fc0d74-ab03-43b4-aec1-873f444f7a3f.jpg?w=1680",
+                                    builder = {
+                                        crossfade(true)
+                                    }
+                                ),
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                    }
+
+                    /** Bottom Button Section **/
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(0.dp,0.dp,0.dp,50.dp)
+                            .align(alignment = Alignment.BottomCenter),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        /** disLike Button **/
+                        FloatingActionButton(
+                            onClick = { scope.launch { onNavigateToDetail.invoke() } }
+                        ) {
+                            Icon(
+                                Icons.Filled.KeyboardArrowRight,
+                                "",
+                                modifier = Modifier.scale(1.2f),
+                                tint = colorResource(R.color.white)
+                            )
+                        }
+
+                        /** select Button **/
+                        FloatingActionButton(
+                            onClick = { scope.launch { vm.setMatchState() } }
+                        ) {
+                            Icon(
+                                Icons.Filled.KeyboardArrowRight,
+                                "",
+                                modifier = Modifier.scale(1.2f),
+                                tint = colorResource(R.color.white)
+                            )
+                        }
+
+                        /** like Button **/
+                        FloatingActionButton(
+                            onClick = { scope.launch { onNavigateToDetail.invoke() } }
+                        ) {
+                            Icon(
+                                Icons.Filled.KeyboardArrowRight,
+                                "",
+                                modifier = Modifier.scale(1.2f),
+                                tint = colorResource(R.color.white)
+                            )
+                        }
+                    }
+
+                    /** in case of any match make it visible **/
+                    AnimatedVisibility(
+                        visible = vm.matchState,
+                        enter = fadeIn(
+                            initialAlpha = 0f
+                        ),
+                        exit = fadeOut(
+                            targetAlpha = 0f
+                        )
+                    ) {
+                        MatchScreen(
+                            partner = vm.partnerState,
+                            onClose = { vm.dismissMatchState() },
+                            onSnackBarMessage = { message ->
+                                scope.launch {
+                                    scaffoldState.snackbarHostState.showSnackbar(
+                                        message = message,
+                                        duration = SnackbarDuration.Short
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun DashboardScreenPreview() {
     GymberComposeTheme {
-        DashboardScreenBody(onClick = { })
+        DashboardScreen(onNavigateToDetail = { })
     }
 }
