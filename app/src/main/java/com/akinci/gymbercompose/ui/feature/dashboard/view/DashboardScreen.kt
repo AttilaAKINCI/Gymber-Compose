@@ -37,6 +37,7 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.akinci.gymbercompose.R
+import com.akinci.gymbercompose.common.helper.LocationProvider
 import com.akinci.gymbercompose.ui.components.NetworkDependentScreen
 import com.akinci.gymbercompose.ui.components.TiledBackground
 import com.akinci.gymbercompose.ui.feature.dashboard.viewmodel.DashboardViewModel
@@ -147,7 +148,9 @@ fun DashboardScreenBody(
                                     verticalArrangement = Arrangement.Center
                                 ) {
                                     Text(
-                                        text = it.name,
+                                        text = stringResource(R.string.gym_header_title, it.name,
+                                            LocationProvider.calculateDistanceByKm(lat2 = it.locations[0].latitude, lon2 = it.locations[0].longitude)
+                                        ),
                                         color = colorResource(R.color.black_60),
                                         modifier = Modifier
                                             .padding(10.dp, 0.dp, 10.dp, 10.dp),

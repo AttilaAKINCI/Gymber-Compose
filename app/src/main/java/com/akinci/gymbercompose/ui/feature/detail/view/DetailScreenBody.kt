@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
 import com.akinci.gymbercompose.R
 import com.akinci.gymbercompose.common.helper.DateTimeProvider
+import com.akinci.gymbercompose.common.helper.LocationProvider
 import com.akinci.gymbercompose.data.output.Location
 import com.akinci.gymbercompose.ui.components.BubbleSpec
 import com.akinci.gymbercompose.ui.feature.dashboard.viewmodel.DashboardViewModel
@@ -253,7 +254,7 @@ fun DetailScreenBody(
                                 style = MaterialTheme.typography.body1
                             )
                             Text(
-                                text = stringResource(R.string.distance_unknown),
+                                text = stringResource(R.string.distance, LocationProvider.calculateDistanceByKm(lat2 = location.latitude, lon2 = location.longitude)),
                                 modifier = Modifier
                                     .align(Alignment.CenterEnd),
                                 textAlign = TextAlign.Start,
