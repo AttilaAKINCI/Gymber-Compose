@@ -20,7 +20,7 @@ android {
         buildConfigField("String", "AGENT", AGENT)
         buildConfigField("String", "AGENT_VAL", AGENT_VAL)
 
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "com.akinci.gymbercompose.HiltTestRunner"
 
         vectorDrawables {
             useSupportLibrary true
