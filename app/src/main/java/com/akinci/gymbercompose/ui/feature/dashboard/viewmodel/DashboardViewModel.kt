@@ -13,6 +13,7 @@ import com.akinci.gymbercompose.common.network.NetworkResponse
 import com.akinci.gymbercompose.data.output.Partner
 import com.akinci.gymbercompose.data.repository.PartnerRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -45,28 +46,34 @@ class DashboardViewModel @Inject constructor(
         getPartnerList()
     }
 
-    fun dismissMatchState(){ matchState = false }
-    fun setMatchState(){
-        matchState = true
-        partnerState = partnerListState[0]
-    }
-    fun setPartner(){
-        partnerState = partnerListState[0]
+    fun getTopElement(): Partner? {
+        return if(partnerListState.isNotEmpty()){ partnerListState[0] } else { null }
     }
 
+    fun like(){
+        getTopElement()?.let {
+            if(it.isAMatch){
+                partnerState = it
+                matchState = true
+            }else{
+                partnerListState = partnerListState.toMutableList().apply { removeAt(0) }
+            }
+        }
+    }
 
-//    fun getTopItem(): Partner{ return partnerList[0] }
-//    fun getLastSwipedItem(): Partner? { return if(swipedItems.isNotEmpty()) { swipedItems.last() } else { null } }
-//    fun removeItem(){
-//        if(partnerList.isNotEmpty()) {
-//            swipedItems.add(partnerList[0])
-//            partnerList.removeAt(0)
-//        }
-//
-//        viewModelScope.launch(coroutineContext.IO) {
-//          //  _partnerListData.emit(ListState.OnData(partnerList))
-//        }
-//    }
+    fun dislike(){
+        partnerState = null
+        partnerListState = partnerListState.toMutableList().apply { removeAt(0) }
+    }
+
+    fun select(){
+        partnerState = getTopElement()
+    }
+
+    fun dismissMatchState(){
+        matchState = false
+        partnerListState = partnerListState.toMutableList().apply { removeAt(0) }
+    }
 
     fun getPartnerList(){
         Timber.d("DashboardViewModel:: getPartnerList called")
@@ -84,6 +91,7 @@ class DashboardViewModel @Inject constructor(
                         }
                         is NetworkResponse.Success -> {
                             networkResponse.data?.let {
+                                delay(2000) // simulate network delay
                                 Timber.d("Partner list fetched size:-> ${it.data}")
                                 partnerListState = PartnerMatchProvider.createAMatchPattern(it.data)
                                 partnerState = partnerListState[0] // todo remove later.

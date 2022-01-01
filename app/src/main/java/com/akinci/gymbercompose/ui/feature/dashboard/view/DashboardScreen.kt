@@ -2,6 +2,7 @@ package com.akinci.gymbercompose.ui.feature.dashboard.view
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.*
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.BorderStroke
@@ -18,14 +19,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.motion.utils.Easing
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberImagePainter
 import com.airbnb.lottie.compose.LottieAnimation
@@ -113,26 +118,54 @@ fun DashboardScreenBody(
                         }
 
                         // swipe gym image
-                        Box(
-                            modifier = Modifier
+                        vm.getTopElement()?.let {
+                            Box(modifier = Modifier
                                 .fillMaxWidth()
                                 .fillMaxHeight(fraction = 0.8f)
                                 .padding(20.dp, 20.dp, 20.dp, 20.dp)
                                 .clip(RoundedCornerShape(18.dp))
-                        ) {
-                            Image(
-                                painter = rememberImagePainter(
-                                    data = vm.partnerState?.header_image?.get("desktop") ?: "https://edge.one.fit/image/partner/image/16849/e4fc0d74-ab03-43b4-aec1-873f444f7a3f.jpg?w=1680",
-                                    builder = {
-                                        crossfade(true)
-                                    }
-                                ),
-                                contentDescription = "",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
+                            ){
+                                Image(
+                                    painter = rememberImagePainter(
+                                        data = it.header_image["desktop"],
+                                        builder = {
+                                            crossfade(true)
+                                        }
+                                    ),
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                )
 
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(colorResource(R.color.white_60))
+                                        .align(Alignment.BottomCenter),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    Text(
+                                        text = it.name,
+                                        color = colorResource(R.color.black_60),
+                                        modifier = Modifier
+                                            .padding(10.dp, 0.dp, 10.dp, 10.dp),
+                                        style = MaterialTheme.typography.h2
+                                    )
+                                }
+                            }
+                         } ?: run {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(fraction = 0.8f)
+                                    .padding(20.dp)
+                                    .clip(RoundedCornerShape(18.dp))
+                                    .alpha(0.8f)
+                                    .background(colorResource(R.color.gray_99))
+                            ) { /** NOP **/ }
+                        }
                     }
 
                     /** Bottom Button Section **/
@@ -147,7 +180,7 @@ fun DashboardScreenBody(
                     ) {
                         /** disLike Button **/
                         FloatingActionButton(
-                            onClick = { scope.launch { /** TODO fill with dislike action **/ } },
+                            onClick = { scope.launch { vm.dislike() } },
                             backgroundColor = colorResource(R.color.red_dark)
                         ) {
                             Icon(
@@ -161,7 +194,7 @@ fun DashboardScreenBody(
                         /** select Button **/
                         FloatingActionButton(
                             onClick = { scope.launch {
-                                vm.setPartner()
+                                vm.select()
                                 onNavigateToDetail.invoke()
                             } },
                             backgroundColor = colorResource(R.color.purple_500)
@@ -176,7 +209,7 @@ fun DashboardScreenBody(
 
                         /** like Button **/
                         FloatingActionButton(
-                            onClick = { scope.launch { /** TODO fill with like action **/ vm.setMatchState() } }
+                            onClick = { scope.launch { vm.like() } }
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_check),

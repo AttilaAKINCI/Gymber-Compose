@@ -162,6 +162,7 @@ fun DetailScreenBody(
                 }
 
                 val locationList = remember { mutableStateListOf<Location>() }
+                locationList.clear()
                 locationList.addAll(vm.partnerState?.locations ?: listOf())
 
                 LazyColumn(
