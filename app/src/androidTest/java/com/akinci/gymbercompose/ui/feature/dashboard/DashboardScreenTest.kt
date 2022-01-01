@@ -32,6 +32,6 @@ class DashboardScreenTest {
 
     @Test
     fun dashboard_check_content() {
-        // TODO fill this later
+
     }
 }
