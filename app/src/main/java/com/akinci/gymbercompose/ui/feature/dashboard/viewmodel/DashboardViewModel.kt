@@ -6,7 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.akinci.gymbercompose.common.coroutine.CoroutineContextProvider
+import com.akinci.gymbercompose.common.helper.LocationProvider
 import com.akinci.gymbercompose.common.helper.PartnerMatchProvider
+import com.akinci.gymbercompose.common.helper.state.PermissionState
 import com.akinci.gymbercompose.common.helper.state.UIState
 import com.akinci.gymbercompose.common.network.NetworkChecker
 import com.akinci.gymbercompose.common.network.NetworkResponse
@@ -48,6 +50,9 @@ class DashboardViewModel @Inject constructor(
 
     fun getTopElement(): Partner? {
         return if(partnerListState.isNotEmpty()){ partnerListState[0] } else { null }
+    }
+    fun findClosestLocation(partner: Partner): String {
+        return LocationProvider.findClosest(partner.locations)?.distance ?: ""
     }
 
     fun like(){
@@ -92,9 +97,16 @@ class DashboardViewModel @Inject constructor(
                         is NetworkResponse.Success -> {
                             networkResponse.data?.let {
                                 delay(2000) // simulate network delay
-                                Timber.d("Partner list fetched size:-> ${it.data}")
-                                partnerListState = PartnerMatchProvider.createAMatchPattern(it.data)
-                                partnerState = partnerListState[0] // todo remove later.
+                                Timber.d("Partner list fetched size:-> ${it.data.size}")
+
+                                // match info inserted.
+                                var partnerList = PartnerMatchProvider.createAMatchPattern(it.data)
+
+                                // distance calculations inserted.
+                                partnerList = LocationProvider.calculateDistances(partnerList)
+
+                                // send data to UI
+                                partnerListState = partnerList
                             }
                         }
                     }

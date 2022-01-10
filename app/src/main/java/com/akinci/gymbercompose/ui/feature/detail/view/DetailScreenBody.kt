@@ -26,7 +26,7 @@ import coil.compose.rememberImagePainter
 import com.akinci.gymbercompose.R
 import com.akinci.gymbercompose.common.helper.DateTimeProvider
 import com.akinci.gymbercompose.common.helper.LocationProvider
-import com.akinci.gymbercompose.data.output.Location
+import com.akinci.gymbercompose.data.output.Address
 import com.akinci.gymbercompose.ui.components.BubbleSpec
 import com.akinci.gymbercompose.ui.feature.dashboard.viewmodel.DashboardViewModel
 import com.akinci.gymbercompose.ui.theme.GymberComposeTheme
@@ -162,7 +162,7 @@ fun DetailScreenBody(
                     }
                 }
 
-                val locationList = remember { mutableStateListOf<Location>() }
+                val locationList = remember { mutableStateListOf<Address>() }
                 locationList.clear()
                 locationList.addAll(vm.partnerState?.locations ?: listOf())
 
@@ -254,7 +254,11 @@ fun DetailScreenBody(
                                 style = MaterialTheme.typography.body1
                             )
                             Text(
-                                text = stringResource(R.string.distance, LocationProvider.calculateDistanceByKm(lat2 = location.latitude, lon2 = location.longitude)),
+                                text = if(location.distance.isNotBlank()) {
+                                    stringResource(R.string.distance, location.distance)
+                                }else{
+                                    stringResource(R.string.distance_unknown)
+                                },
                                 modifier = Modifier
                                     .align(Alignment.CenterEnd),
                                 textAlign = TextAlign.Start,

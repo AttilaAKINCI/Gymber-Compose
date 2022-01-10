@@ -70,6 +70,9 @@ dependencies {
     implementation "com.google.android.material:material:1.4.0"
     implementation "androidx.activity:activity-compose:1.4.0"
 
+    // location
+    implementation 'com.google.android.gms:play-services-location:19.0.0'
+
     // Compose
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
